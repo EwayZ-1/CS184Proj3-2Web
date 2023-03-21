@@ -22,6 +22,8 @@
     <div class="padded">
 
         
+        * NOTE: For this project, you will choose TWO out of the four given parts to complete. One of those parts must be Part 1 or Part 2. In other words, you can choose any combination of two parts except the pair (Part 3, Part 4).
+
         <h2 align="middle">Overview</h2>
         <p>
             In this project, we build on top of the image rendering results from Proj 3-1 to create more cool visual lighting effects.
@@ -30,9 +32,38 @@
             to change focus by changing lens radius and/or focal distance.
         </p >
         
+        <h3 align="middle">Collaboration</h3>
+        <p>
+            We worked together on this entire project. We went through the parts together and wrote our code while doing zoom screenshare.
+            The process went really well and both partners contributed equally to this project. We learned how to implement different 
+            materials, and we see how depth of field really affects the focus of the images. 
+        </p >
+        <br>
 
         <h3 align="middle">Part 1. Mirror and Glass Materials</h3>
-
+        <p><b>
+            Implementation detail
+        </b></p >
+        <p>
+            <ul>
+                <li>
+                    Task 1: we set the wi.x and wi.y to be -wo.x and -wo.y, and set wi.z to be wo.z.
+                </li>
+                <li>
+                    Task 2: we call reflect() to get the wi, and set pdf to 1.
+                </li>
+                <li>
+                    Task 3: In refraction(), we first decide whether wo is coming from outside the material or inside material, and set 
+                    eta respectively. Then, we checked if this is a total internal reflection, and return false if it is. Otherwise, we 
+                    apply the given formulas to calculate wi.x, wi.y, and wi.z, and return true. In sample_f(), we called refraction as 
+                    a helper, find wi, set pdf to 1, and return the reflectance calcuated from the given formula.
+                </li>
+                <li>
+                    Task 4: In general, we followed the pipeline given in the spec. To find Schlick's reflection coefficient R, we used 
+                    the formula: R = R_0 + (1 - R_0) (1 - cos(theta))^5, where R_0 is ((1 - ior) / (1 + ior))^2.
+                </li>
+            </ul>
+        </p >
         <p><b>
             Show a sequence of six images of scene `CBspheres.dae` rendered with `max_ray_depth` set to 0, 1, 2, 3, 4, 5, and 100. The other settings should be at least 64 samples per pixel and 4 samples per light. Make sure to include all screenshots.
         </b></p>
@@ -199,9 +230,115 @@
 
 
         <h3 align="middle">Part 4. Depth of Field</h3>
-        <b>
-            For these subparts, we recommend using a microfacet BSDF scene to show off the cool out of focus effects you can get with depth of field!
-        </b>
+        <p>
+            <p><b>Implementation notes:</b></p> 
+            <li>First we find the red ray in the example diagram, which is similar to the previous pin-hole camera ray in the project 1.</li>
+            <li>Then we use the focalDistance divide by red_ray_direction.z to the the time needed for the ray to hit the focus plane.
+                <li>With the time traveled, we can compute the focus point <code> pFocus </code> by putting that time into the at_time function. </li>
+                <li>Then, we sample the pLens through <span class="katex">
+                <span class="katex-mathml">
+                    <math>
+                        <semantics>
+                            <mrow>
+                                <mrow>
+                                    <mi mathvariant="normal">p</mi>
+                                    <mi mathvariant="normal">L</mi>
+                                    <mi mathvariant="normal">e</mi>
+                                    <mi mathvariant="normal">n</mi>
+                                    <mi mathvariant="normal">s</mi>
+                                </mrow>
+                                <mo>=</mo>
+                                <mo>(</mo>
+                                <mrow>
+                                    <mi mathvariant="normal">l</mi>
+                                    <mi mathvariant="normal">e</mi>
+                                    <mi mathvariant="normal">n</mi>
+                                    <mi mathvariant="normal">s</mi>
+                                    <mi mathvariant="normal">R</mi>
+                                    <mi mathvariant="normal">a</mi>
+                                    <mi mathvariant="normal">d</mi>
+                                    <mi mathvariant="normal">i</mi>
+                                    <mi mathvariant="normal">u</mi>
+                                    <mi mathvariant="normal">s</mi>
+                                </mrow>
+                                <mtext></mtext>
+                                <msqrt>
+                                    <mrow>
+                                        <mi>r</mi>
+                                        <mi>n</mi>
+                                        <mi>d</mi>
+                                        <mi>R</mi>
+                                    </mrow>
+                                </msqrt>
+                                <mo>⋅</mo>
+                                <mi>cos</mi>
+                                <mo>(</mo>
+                                <mrow>
+                                    <mi mathvariant="normal">r</mi>
+                                    <mi mathvariant="normal">n</mi>
+                                    <mi mathvariant="normal">d</mi>
+                                    <mi mathvariant="normal">T</mi>
+                                    <mi mathvariant="normal">h</mi>
+                                    <mi mathvariant="normal">e</mi>
+                                    <mi mathvariant="normal">t</mi>
+                                    <mi mathvariant="normal">a</mi>
+                                </mrow>
+                                <mo>)</mo>
+                                <mo separator="true">,</mo>
+                                <mrow>
+                                    <mi mathvariant="normal">l</mi>
+                                    <mi mathvariant="normal">e</mi>
+                                    <mi mathvariant="normal">n</mi>
+                                    <mi mathvariant="normal">s</mi>
+                                    <mi mathvariant="normal">R</mi>
+                                    <mi mathvariant="normal">a</mi>
+                                    <mi mathvariant="normal">d</mi>
+                                    <mi mathvariant="normal">i</mi>
+                                    <mi mathvariant="normal">u</mi>
+                                    <mi mathvariant="normal">s</mi>
+                                </mrow>
+                                <mtext></mtext>
+                                <msqrt>
+                                    <mrow>
+                                        <mi>r</mi>
+                                        <mi>n</mi>
+                                        <mi>d</mi>
+                                        <mi>R</mi>
+                                    </mrow>
+                                </msqrt>
+                                <mo>⋅</mo>
+                                <mi>sin</mi>
+                                <mo>(</mo>
+                                <mrow>
+                                    <mi mathvariant="normal">r</mi>
+                                    <mi mathvariant="normal">n</mi>
+                                    <mi mathvariant="normal">d</mi>
+                                    <mi mathvariant="normal">T</mi>
+                                    <mi mathvariant="normal">h</mi>
+                                    <mi mathvariant="normal">e</mi>
+                                    <mi mathvariant="normal">t</mi>
+                                    <mi mathvariant="normal">a</mi>
+                                </mrow>
+                                <mo>)</mo>
+                                <mo separator="true">,</mo>
+                                <mn>0</mn>
+                                <mo>)</mo>
+                            </mrow>
+                            <annotation encoding="application/x-tex">\mathrm{pLens}=(\mathrm{lensRadius}\ \sqrt{rndR} \cdot \cos(\mathrm{rndTheta}), \mathrm{lensRadius}\ \sqrt{rndR} \cdot \sin(\mathrm{rndTheta}), 0)</annotation>
+                        </semantics>
+                    </math>
+                </span>
+                </span>
+                .</li>
+                <li> Then, we use the world coordinate pLens + pos as the origin, and setup a ray towards world coordinate of pFocus. Set the ray's min_t to nClip and max_t to fClip. Finally we return this ray.</li>
+            </p>
+        <p>
+            <b>
+                For these subparts, we recommend using a microfacet BSDF scene to show off the cool out of focus effects you can get with depth of field!
+            </b>
+        </p>
+       
+        
         <p><b>
             In a few sentences, explain the differences between a pinhole camera model and a thin-lens camera model. 
         </b></p>
@@ -209,6 +346,7 @@
             With a pinhole camera model, all light goes through one point at the camera and travels in straight line. In this model, 
             everything is in focus. With a thin-lens camera model, lights are refracted and bent when it goes through the thin lens, 
             thereby creating a plane of focus. Everything that is not within this plane are not in focus.
+            
         </p>
         <br>
         <p><b>
@@ -273,6 +411,7 @@
         <br>
 
     </div>
+    
 </body>
 </html>
 
